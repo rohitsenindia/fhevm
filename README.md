@@ -1,14 +1,4 @@
 <p align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/.gitbook/assets/fhevm-header-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="docs/.gitbook/assets/fhevm-header-light.png">
-  <img width=500 alt="fhevm">
-</picture>
-</p>
-
-<hr/>
-
-<p align="center">
   <a href="fhevm-whitepaper.pdf"> 📃 Read white paper</a> |<a href="https://docs.zama.ai/protocol"> 📒 Documentation</a> | <a href="https://zama.ai/community"> 💛 Community support</a> | <a href="https://github.com/zama-ai/awesome-zama"> 📚 FHE resources by Zama</a>
 </p>
 
