@@ -14,7 +14,7 @@ use alloy::{
 };
 use anyhow::anyhow;
 use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
-use std::time::Duration;
+use std::{sync::Once, time::Duration};
 use tracing::{info, warn};
 
 /// The number of connection retry to connect to the database or the Gateway RPC node.
@@ -90,11 +90,18 @@ where
     L: ProviderLayer<RootProvider>,
     F: ProviderLayer<L::Provider> + TxFiller,
 {
+    INSTALL_CRYPTO_PROVIDER_ONCE.call_once(|| {
+        rustls::crypto::aws_lc_rs::default_provider()
+            .install_default()
+            .map_err(|e| anyhow!("Failed to install AWS-LC crypto provider: {e:?}"))
+            .unwrap()
+    });
+
     for i in 1..=CONNECTION_RETRY_NUMBER {
         info!("Attempting connection to Gateway... ({i}/{CONNECTION_RETRY_NUMBER})");
 
         let ws_endpoint = WsConnect::new(gateway_url);
-        match provider_builder_new().on_ws(ws_endpoint).await {
+        match provider_builder_new().connect_ws(ws_endpoint).await {
             Ok(provider) => {
                 info!("Connected to Gateway's RPC node successfully");
                 return Ok(provider);
@@ -108,3 +115,5 @@ where
     }
     Err(anyhow!("Could not connect to Gateway at url {gateway_url}"))
 }
+
+static INSTALL_CRYPTO_PROVIDER_ONCE: Once = Once::new();
